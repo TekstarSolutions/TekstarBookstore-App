@@ -1,10 +1,10 @@
 {
     "config": {
         "api": {
-            "resourceApi": "http://18.117.82.204/resources-api",
-            "inventoryApi": "http://18.117.82.204/inventory-api",
-            "clientApi": "http://18.117.82.204/clients-api",
-            "rentingApi": "http://18.117.82.204/renting-api"
+            "resourceApi": "http://44.212.23.209/resources-api",
+            "inventoryApi": "http://44.212.23.209/inventory-api",
+            "clientApi": "http://44.212.23.209/clients-api",
+            "rentingApi": "http://44.212.23.209/renting-api"
         }
     }
 }
