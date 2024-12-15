@@ -1,28 +1,77 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ template "central-ingress.name" . }}-internal
-  labels:
-    app: {{ template "central-ingress.name" . }}-internal
-    chart: {{ template "central-ingress.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-{{- with .Values.ingress.internal.annotations }}
+  name: tekstar-bookstore-internal-ingress
+  namespace: development
   annotations:
-{{ toYaml . | indent 4 }}
-{{- end }}
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:248189942871:certificate/e39cde1e-59c1-482f-835e-b4663e974rft
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=360
+    external-dns.alpha.kubernetes.io/hostname: >
+      renting-api.dev.habeshaprojects.com, resource-api.dev.habeshaprojects.com,
+      inventory-api.dev.habeshaprojects.com, clients-api.dev.habeshaprojects.com,
+      bookstore.dev.habeshaprojects.com, api.dev.habeshaprojects.com
 spec:
   rules:
-  {{- range .Values.ingress.internal.hosts }}
-    - host: {{ .hostname }}
+    - host: renting-api.dev.habeshaprojects.com
       http:
         paths:
-          - path: /*
+          - path: /
+            pathType: Prefix
             backend:
-              serviceName: redirect
-              servicePort: use-annotation
-          - path: /*
+              service:
+                name: renting-api-service
+                port:
+                  number: 80
+    - host: resource-api.dev.habeshaprojects.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
             backend:
-              serviceName: {{ .serviceName }}
-              servicePort: {{ .port }}
-  {{- end }}
+              service:
+                name: resource-api-service
+                port:
+                  number: 80
+    - host: inventory-api.dev.habeshaprojects.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: inventory-api-service
+                port:
+                  number: 80
+    - host: clients-api.dev.habeshaprojects.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: clients-api-service
+                port:
+                  number: 80
+    - host: bookstore.dev.habeshaprojects.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: front-end-service
+                port:
+                  number: 80
+    - host: api.dev.habeshaprojects.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: front-end-service-proxy
+                port:
+                  number: 80
